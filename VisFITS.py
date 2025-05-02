@@ -22,7 +22,7 @@ def parse_args():
 
     return parser.parse_args()
 
-def main(args, path, int):
+def main(args, path, num):
     outdir = args.outdir
     cluster_name = args.cluster_name
     band_name = args.band_name
@@ -76,7 +76,7 @@ def main(args, path, int):
     # beam is the effective resolution element of the telescope
     # Jy/beam is the flux density per beam area (common unit in radio/mm astronomy)
     plt.colorbar(im, pad=0.15).set_label('Flux (Jy/beam)')
-    plt.savefig(os.path.join(outdir, f"{cluster_name}_{band_name}_{int}.png"))
+    plt.savefig(os.path.join(outdir, f"{cluster_name}_{band_name}_{num}.png"))
     hdul.close()
 
 if __name__ == '__main__':
