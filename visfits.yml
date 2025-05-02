@@ -1,4 +1,7 @@
 name: visfits
+channels:
+  - conda-forge
+  - defaults
 dependencies:
   - python=3.12.7=hc5c86c4_0_cpython
   - pip=24.3.1=pyh8b19718_0
