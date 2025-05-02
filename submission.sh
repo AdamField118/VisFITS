@@ -23,7 +23,7 @@ fi
 
 echo "Proceeding with code..."
 
-python VisFITS.py "$OUTDIR" "$COADDPATH" "$cluster_name" "$band_name"
+python VisFITS.py "$OUTDIR" "$COADDPATH" "$EMODEPATH" "$cluster_name" "$band_name"
 
 # Check if the Python script ran successfully
 : '
