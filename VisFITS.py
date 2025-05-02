@@ -13,6 +13,8 @@ def parse_args():
                         help='Output directory for images')
     parser.add_argument('coaddpath', type=str, default=None,
                         help='Path to COADD File')
+    parser.add_argument('emodepath', type=str, default=None,
+                        help='Path to COADD File')
     parser.add_argument('cluster_name', type=str, default=None,
                         help='Path to COADD File')
     parser.add_argument('band_name', type=str, default=None,
@@ -20,13 +22,12 @@ def parse_args():
 
     return parser.parse_args()
 
-def main(args):
+def main(args, path, int):
     outdir = args.outdir
-    coaddpath = args.coaddpath
     cluster_name = args.cluster_name
     band_name = args.band_name
 
-    hdul = fits.open(coaddpath)
+    hdul = fits.open(path)
     image_data = hdul[0].data
     header = hdul[0].header
 
@@ -75,9 +76,12 @@ def main(args):
     # beam is the effective resolution element of the telescope
     # Jy/beam is the flux density per beam area (common unit in radio/mm astronomy)
     plt.colorbar(im, pad=0.15).set_label('Flux (Jy/beam)')
-    plt.savefig(os.path.join(outdir, f"{cluster_name}_{band_name}_plot.png"))
+    plt.savefig(os.path.join(outdir, f"{cluster_name}_{band_name}_{int}.png"))
     hdul.close()
 
 if __name__ == '__main__':
     args = parse_args()
-    rc = main(args)
+    coaddpath = args.coaddpath
+    emodepath = args.emodepath
+    main(args, coaddpath, 1)
+    main(args, emodepath, 2)
