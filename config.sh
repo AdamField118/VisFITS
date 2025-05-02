@@ -3,9 +3,9 @@
 export cluster_name="PLCKG287d0p32d9"
 export band_name="b"
 
-export DATADIR="./data/"
-export OUTDIR="./outputs/"
-export COADDPATH="${DATADIR}/${cluster_name}/coadd/${band_name}.fits"
+export DATADIR="../superbit-lensing/data"
+export OUTDIR="./outputs"
+export COADDPATH="${DATADIR}/${cluster_name}/${band_name}/coadd/${cluster_name}_coadd_${band_name}.fits"
  
 module load miniconda3
 # Set Conda environment
