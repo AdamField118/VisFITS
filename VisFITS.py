@@ -96,7 +96,8 @@ def create_overlay(args):
     # Calculate smart contours for emode
     emode_abs_max = np.nanmax(np.abs(emode_crop))
     positive_levels = np.linspace(0.1*emode_abs_max, emode_abs_max, 5)
-    negative_levels = np.linspace(-0.1*emode_abs_max, -emode_abs_max, 5)
+    negative_levels = np.linspace(-emode_abs_max, -0.1*emode_abs_max, 5)  # Fixed order
+    negative_levels = np.sort(negative_levels)  # Explicit sorting
     
     # Plot positive and negative contours separately with different colors
     positive_contours = ax.contour(emode_crop, levels=positive_levels, 
