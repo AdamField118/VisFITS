@@ -50,7 +50,6 @@ def process_image(args, path, name, target_coord):
     ra.set_major_formatter('hh:mm:ss')
     dec.set_major_formatter('dd:mm:ss')
     ax.coords.grid(True, color='white', linestyle='--', alpha=0.7)
-    ax.invert_xaxis()
 
     plt.colorbar(im, pad=0.15).set_label('Flux (Jy/beam)')
     plt.savefig(os.path.join(args.outdir, f"{args.cluster_name}_{args.band_name}_{name}.png"))
