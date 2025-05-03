@@ -23,6 +23,10 @@ export CONDA_ENV="visfits"
 ```  
 I will say that using visfits rather than sblens decreased the time it takes to produce the plots from 41 seconds to 8 seconds.  
 If you are part of the ISU with Professor Berglund and Dr. Henry, you likely do not need to touch band_name either, just the cluster_name!  
+# Prereqs 
+This assumes that you have successfully completed the superbit-lensing processing.
+## SMPy FITS output!  
+The big one I would like to emphasize is that this also assumes you have run through SMPy, but gone into the config file and turned save as fits to true (should be right under the E and B mode option).
 # Running
 Next just run the following command (from the VisFITS directory):
 ```bash
