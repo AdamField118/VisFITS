@@ -4,10 +4,10 @@
 #SBATCH -n 1
 #SBATCH --mem-per-cpu=5g
 #SBATCH --partition=short
-#SBATCH -J VizFITS
+#SBATCH -J VisFITS
 #SBATCH -v
-#SBATCH -o slurm_outfiles/out_vizfits_%j.log
-#SBATCH -e slurm_outfiles/err_vizfits_%j.err
+#SBATCH -o slurm_outfiles/out_visfits_%j.log
+#SBATCH -e slurm_outfiles/err_visfits_%j.err
 
 # Load configuration file
 source "$SLURM_SUBMIT_DIR/config.sh"
