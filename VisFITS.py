@@ -33,26 +33,12 @@ def process_image(args, path, name, target_coord):
     header['CTYPE1'] = 'RA---TAN'
     header['CTYPE2'] = 'DEC--TAN'
     wcs = WCS(header)
-    
-    # Convert target coordinates to this image's pixel space
-    target_x, target_y = wcs.world_to_pixel(target_coord)
-    
-    crop_range = 500
-    height, width = image_data.shape
-    
-    # Calculate safe crop boundaries
-    y_start = max(0, int(target_y) - crop_range)
-    y_end = min(height, int(target_y) + crop_range)
-    x_start = max(0, int(target_x) - crop_range)
-    x_end = min(width, int(target_x) + crop_range)
-    
-    cropped_data = image_data[y_start:y_end, x_start:x_end]
 
     # Create plot
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection=wcs)
-    norm = ImageNormalize(cropped_data, interval=ZScaleInterval())
-    im = ax.imshow(cropped_data, cmap='magma', norm=norm, origin='lower')
+    norm = ImageNormalize(image_data, interval=ZScaleInterval())
+    im = ax.imshow(image_data, cmap='magma', norm=norm, origin='lower')
 
     # Coordinate formatting
     ra = ax.coords['ra']
