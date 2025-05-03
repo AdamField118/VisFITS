@@ -18,6 +18,7 @@ def parse_args():
     return parser.parse_args()
 
 def load_and_prepare(path):
+    """New helper function to load FITS data"""
     hdul = fits.open(path)
     data = hdul[0].data
     header = hdul[0].header.copy()
@@ -26,7 +27,7 @@ def load_and_prepare(path):
     return data, header, hdul
 
 def main(args, path, name):
-    data, header, hdul = load_and_prepare(path)
+    data, header, hdul = load_and_prepare(path)  # Modified line
     wcs = WCS(header)
     center_x = int(header['CRPIX1']) - 1
     center_y = int(header['CRPIX2']) - 1
@@ -41,6 +42,7 @@ def main(args, path, name):
     norm = ImageNormalize(cropped_data, interval=ZScaleInterval())
     im = ax.imshow(cropped_data, cmap='magma', norm=norm, origin='lower')
 
+    # Rest of your original plotting code remains unchanged
     ra = ax.coords['ra']
     dec = ax.coords['dec']
     ra.set_axislabel('Right Ascension (ICRS)')
@@ -58,17 +60,21 @@ def main(args, path, name):
     hdul.close()
 
 def create_overlay(args):
+    """Create overlay plot with adjusted scaling"""
     coadd_data, coadd_header, coadd_hdul = load_and_prepare(args.coaddpath)
     emode_data, emode_header, emode_hdul = load_and_prepare(args.emodepath)
     
+    # Get sky center from coadd
     center_sky = SkyCoord(coadd_header['CRVAL1'] * u.deg, 
                         coadd_header['CRVAL2'] * u.deg, frame='icrs')
     
+    # Convert to pixel coordinates in both images
     wcs_coadd = WCS(coadd_header)
     wcs_emode = WCS(emode_header)
     x_coadd, y_coadd = wcs_coadd.world_to_pixel(center_sky)
     x_emode, y_emode = wcs_emode.world_to_pixel(center_sky)
 
+    # Crop both images
     crop_range = 500
     coadd_crop = coadd_data[
         int(y_coadd)-crop_range : int(y_coadd)+crop_range,
@@ -79,16 +85,43 @@ def create_overlay(args):
         int(x_emode)-crop_range : int(x_emode)+crop_range
     ]
 
+    # Create overlay plot
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection=wcs_coadd)
     
+    # Plot coadd with its own scale
     norm_coadd = ImageNormalize(coadd_crop, interval=ZScaleInterval())
-    ax.imshow(coadd_crop, cmap='magma', norm=norm_coadd, origin='lower', alpha=0.8)
+    im = ax.imshow(coadd_crop, cmap='magma', norm=norm_coadd, origin='lower', alpha=0.7)
 
-    norm_emode = ImageNormalize(emode_crop, interval=ZScaleInterval())
-    levels = np.linspace(norm_emode.vmin, norm_emode.vmax, 5)
-    contours = ax.contour(emode_crop, levels=levels, colors='cyan', linewidths=1.5)
+    # Calculate smart contours for emode
+    emode_abs_max = np.nanmax(np.abs(emode_crop))
+    positive_levels = np.linspace(0.1*emode_abs_max, emode_abs_max, 5)
+    negative_levels = np.linspace(-0.1*emode_abs_max, -emode_abs_max, 5)
+    
+    # Plot positive and negative contours separately with different colors
+    positive_contours = ax.contour(emode_crop, levels=positive_levels, 
+                                 colors='limegreen', linewidths=1.5, linestyles='solid')
+    negative_contours = ax.contour(emode_crop, levels=negative_levels, 
+                                 colors='magenta', linewidths=1.5, linestyles='dashed')
 
+    # Add contour labels
+    ax.clabel(positive_contours, inline=True, fontsize=8, fmt='%1.2f')
+    ax.clabel(negative_contours, inline=True, fontsize=8, fmt='%1.2f')
+
+    # Formatting
+    cbar = plt.colorbar(im, pad=0.15)
+    cbar.set_label('Coadd Flux (Jy/beam)')
+    
+    # Add contour legend
+    from matplotlib.lines import Line2D
+    legend_elements = [
+        Line2D([0], [0], color='limegreen', lw=2, label='Positive E-mode'),
+        Line2D([0], [0], color='magenta', lw=2, linestyle='--', label='Negative E-mode')
+    ]
+    ax.legend(handles=legend_elements, loc='upper right', facecolor='black', 
+            edgecolor='white', fontsize=10, labelcolor='white')
+
+    # Keep existing coordinate formatting
     ra = ax.coords['ra']
     dec = ax.coords['dec']
     ra.set_axislabel('Right Ascension (ICRS)')
@@ -100,7 +133,6 @@ def create_overlay(args):
     ax.coords.grid(True, color='white', linestyle='--', alpha=0.7)
     ax.invert_xaxis()
 
-    plt.colorbar(ax.images[0], pad=0.15).set_label('Coadd Flux (Jy/beam)')
     plt.savefig(os.path.join(args.outdir, f"{args.cluster_name}_{args.band_name}_overlay.png"))
     plt.close()
     coadd_hdul.close()
@@ -108,6 +140,6 @@ def create_overlay(args):
 
 if __name__ == '__main__':
     args = parse_args()
-    main(args, args.coaddpath, 'coadd')
-    main(args, args.emodepath, 'emode')
-    create_overlay(args)
+    main(args, args.coaddpath, 'coadd')  # Original call
+    main(args, args.emodepath, 'emode')  # Original call
+    create_overlay(args)  # New call for overlay
