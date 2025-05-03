@@ -73,69 +73,89 @@ def process_image(args, path, name, target_coord):
     hdul.close()
 
 def create_overlay(args, target_coord):
-    """Create overlay plot of coadd and emode"""
-    # Load and prepare both datasets
-    coadd_hdul = fits.open(args.coaddpath)
-    coadd_data = coadd_hdul[0].data
-    coadd_header = coadd_hdul[0].header.copy()
-    coadd_header['CTYPE1'] = 'RA---TAN'
-    coadd_header['CTYPE2'] = 'DEC--TAN'
-    wcs_coadd = WCS(coadd_header)
-    
-    emode_hdul = fits.open(args.emodepath)
-    emode_data = emode_hdul[0].data
-    emode_header = emode_hdul[0].header.copy()
-    emode_header['CTYPE1'] = 'RA---TAN'
-    emode_header['CTYPE2'] = 'DEC--TAN'
-    wcs_emode = WCS(emode_header)
+    """Create overlay plot with properly scaled contours"""
+    # Load data with context managers
+    with fits.open(args.coaddpath) as coadd_hdul, fits.open(args.emodepath) as emode_hdul:
+        # Process coadd data
+        coadd_data = coadd_hdul[0].data
+        coadd_header = coadd_hdul[0].header.copy()
+        coadd_header['CTYPE1'] = 'RA---TAN'
+        coadd_header['CTYPE2'] = 'DEC--TAN'
+        wcs_coadd = WCS(coadd_header)
 
-    # Crop both images around target coordinates
-    def crop_image(data, wcs):
-        target_x, target_y = wcs.world_to_pixel(target_coord)
-        crop_range = 500
-        height, width = data.shape
-        y_start = max(0, int(target_y) - crop_range)
-        y_end = min(height, int(target_y) + crop_range)
-        x_start = max(0, int(target_x) - crop_range)
-        x_end = min(width, int(target_x) + crop_range)
-        return data[y_start:y_end, x_start:x_end]
-    
-    coadd_crop = crop_image(coadd_data, wcs_coadd)
-    emode_crop = crop_image(emode_data, wcs_emode)
+        # Process emode data
+        emode_data = emode_hdul[0].data
+        emode_header = emode_hdul[0].header.copy()
+        emode_header['CTYPE1'] = 'RA---TAN'
+        emode_header['CTYPE2'] = 'DEC--TAN'
+        wcs_emode = WCS(emode_header)
 
-    # Create overlay plot using coadd's WCS
-    fig = plt.figure(figsize=(10, 8))
-    ax = fig.add_subplot(111, projection=wcs_coadd)
-    
-    # Plot coadd as background
-    norm_coadd = ImageNormalize(coadd_crop, interval=ZScaleInterval())
-    im = ax.imshow(coadd_crop, cmap='magma', norm=norm_coadd, origin='lower', alpha=0.8)
+        # Crop both images using common WCS
+        def get_cropped(data, wcs):
+            target_x, target_y = wcs.world_to_pixel(target_coord)
+            crop_range = 500
+            y_start = max(0, int(target_y) - crop_range)
+            y_end = min(data.shape[0], int(target_y) + crop_range)
+            x_start = max(0, int(target_x) - crop_range)
+            x_end = min(data.shape[1], int(target_x) + crop_range)
+            return data[y_start:y_end, x_start:x_end]
 
-    # Plot emode as contours with auto-scaling
-    norm_emode = ImageNormalize(emode_crop, interval=ZScaleInterval())
-    levels = np.linspace(norm_emode.vmin, norm_emode.vmax, 7)
-    contours = ax.contour(emode_crop, levels=levels, colors='cyan', linewidths=1.5, alpha=0.7)
+        coadd_crop = get_cropped(coadd_data, wcs_coadd)
+        emode_crop = get_cropped(emode_data, wcs_emode)
 
-    # Formatting
-    ra = ax.coords['ra']
-    dec = ax.coords['dec']
-    ra.set_axislabel('Right Ascension (ICRS)')
-    dec.set_axislabel('Declination (ICRS)')
-    ra.set_ticks(size=10, color='white', width=1.5)
-    dec.set_ticks(size=10, color='white', width=1.5)
-    ra.set_major_formatter('hh:mm:ss')
-    dec.set_major_formatter('dd:mm:ss')
-    ax.coords.grid(True, color='white', linestyle='--', alpha=0.7)
-    ax.invert_xaxis()
+        # Create figure with coadd WCS
+        fig = plt.figure(figsize=(10, 8))
+        ax = fig.add_subplot(111, projection=wcs_coadd)
 
-    # Add labels and legend
-    plt.colorbar(im, pad=0.15).set_label('Coadd Flux (Jy/beam)')
-    ax.clabel(contours, inline=True, fontsize=8, fmt='%1.2f')
-    
-    plt.savefig(os.path.join(args.outdir, f"{args.cluster_name}_{args.band_name}_overlay.png"))
-    plt.close()
-    coadd_hdul.close()
-    emode_hdul.close()
+        # Plot coadd with adjusted transparency
+        norm_coadd = ImageNormalize(coadd_crop, interval=ZScaleInterval())
+        im = ax.imshow(coadd_crop, cmap='magma', norm=norm_coadd, origin='lower', alpha=0.7)
+
+        # Calculate smart contour levels for emode
+        emode_abs_max = np.nanmax(np.abs(emode_crop))
+        contour_levels = np.linspace(-emode_abs_max, emode_abs_max, 11)
+
+        # Plot contours with enhanced visibility
+        contours = ax.contour(
+            emode_crop, 
+            levels=contour_levels,
+            colors=['limegreen' if v > 0 else 'magenta' for v in contour_levels],
+            linewidths=1.2,
+            linestyles='-',
+            alpha=0.9
+        )
+
+        # Add contour labels
+        ax.clabel(contours, inline=True, fontsize=8, fmt='%1.2e', colors='white')
+
+        # Add legend
+        from matplotlib.lines import Line2D
+        legend_elements = [
+            Line2D([0], [0], color='limegreen', lw=2, label='Positive E-mode'),
+            Line2D([0], [0], color='magenta', lw=2, label='Negative E-mode')
+        ]
+        ax.legend(handles=legend_elements, loc='upper right', 
+                facecolor='black', edgecolor='white',
+                fontsize=9, labelcolor='white')
+
+        # Format axes (same as before)
+        ra = ax.coords['ra']
+        dec = ax.coords['dec']
+        ra.set_axislabel('Right Ascension (ICRS)')
+        dec.set_axislabel('Declination (ICRS)')
+        ra.set_ticks(size=10, color='white', width=1.5)
+        dec.set_ticks(size=10, color='white', width=1.5)
+        ra.set_major_formatter('hh:mm:ss')
+        dec.set_major_formatter('dd:mm:ss')
+        ax.coords.grid(True, color='white', linestyle='--', alpha=0.7)
+        ax.invert_xaxis()
+
+        # Add colorbar
+        cbar = plt.colorbar(im, pad=0.15)
+        cbar.set_label('Coadd Flux (Jy/beam)')
+
+        plt.savefig(os.path.join(args.outdir, f"{args.cluster_name}_{args.band_name}_overlay.png"))
+        plt.close()
 
 if __name__ == '__main__':
     args = parse_args()
