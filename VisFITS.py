@@ -28,8 +28,8 @@ def process_image(args, path, name, target_coord):
     hdul = fits.open(path)
     image_data = hdul[0].data
     header = hdul[0].header.copy()
+    print(header)
     
-    # Force consistent projection
     header['CTYPE1'] = 'RA---TAN'
     header['CTYPE2'] = 'DEC--TAN'
     wcs = WCS(header)
