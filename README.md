@@ -4,7 +4,14 @@ In this project I want to learn how to make a .yml file that sets up a conda env
 The main reason I hope to visualize fits files is for a poster I will be creating on my work in Professor Kallan's ISU. For this I hope to create the coadd graph and an overlay of the coadd graph with the emode map in order to easily see the mass centralized around the galaxy cluster.  
 
 # Setup
-I made this code capable of running with the sblens venv, but if you either don't have sblens or want to save some compute time, run the following command: 
+First to clone this repo run the command  
+
+```bash
+$ git clone https://github.com/AdamField118/VisFITS.git
+```
+
+Make sure to do this inside the weak lensing directory, or whatever directory you have both superbit-lensing and SMPy in!  
+I made this code capable of running with the sblens venv, but if you either don't have sblens or want to save some compute time, run the following command:  
 
 ```bash
 $ conda env create -f visfits.yml
