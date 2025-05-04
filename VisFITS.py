@@ -19,34 +19,40 @@ def process_image(args, path, name):
     image_data = hdul[0].data
     header = hdul[0].header
     
-    # Add this line to ensure proper WCS handling
-    wcs = WCS(header).celestial  # Focus on celestial coordinates only
+    wcs = WCS(header).celestial
+    print(wcs.to_header())
 
-    # Create plot
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection=wcs)
     
-    # Add these lines to explicitly set coordinate display
-    ax.coords[0].set_axislabel('Right Ascension (ICRS)')
-    ax.coords[1].set_axislabel('Declination (ICRS)')
+    lon = ax.coords[0]
+    lat = ax.coords[1]
+    
+    lon.set_axislabel('Right Ascension (ICRS)', minpad=0.8)
+    lon.set_major_formatter('hh:mm:ss')
+    lon.set_ticks(color='black', size=10, width=1.5)
+    lon.display_minor_ticks(True)
+    
+    lat.set_axislabel('Declination (ICRS)', minpad=0.9)
+    lat.set_major_formatter('dd:mm:ss')
+    lat.set_ticks(color='black', size=10, width=1.5)
+    lat.display_minor_ticks(True)
+    
+    ax.set_xlim(-0.5, header['NAXIS1']-0.5)
+    ax.set_ylim(-0.5, header['NAXIS2']-0.5)
     
     norm = ImageNormalize(image_data, interval=ZScaleInterval())
-    im = ax.imshow(image_data, cmap='magma', norm=norm, origin='lower', aspect='auto')
+    im = ax.imshow(image_data, cmap='magma', norm=norm, 
+                  origin='lower', aspect='auto')
 
-    # Coordinate formatting - modified grid parameters
-    ra = ax.coords[0]
-    dec = ax.coords[1]
-    ra.set_major_formatter('hh:mm:ss')
-    dec.set_major_formatter('dd:mm:ss')
-    
-    # Modified grid settings for better visibility
     ax.coords.grid(True, color='gray', linestyle='--', alpha=0.7)
     
-    # Add this to ensure proper layout
-    plt.tight_layout()
-    
-    plt.colorbar(im, pad=0.15).set_label('Flux (Jy/beam)')
-    plt.savefig(os.path.join(args.outdir, f"{args.cluster_name}_{args.band_name}_{name}.png"), bbox_inches='tight')
+    cbar = plt.colorbar(im, pad=0.05)
+    cbar.set_label('Flux (Jy/beam)', rotation=270, labelpad=25)
+
+    plt.subplots_adjust(left=0.15, right=0.9, bottom=0.15, top=0.9)
+    plt.savefig(os.path.join(args.outdir, f"{args.cluster_name}_{args.band_name}_{name}.png"), 
+                bbox_inches='tight', dpi=150)
     plt.close()
     hdul.close()
 
