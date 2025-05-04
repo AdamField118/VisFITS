@@ -19,52 +19,64 @@ def process_image(args, path, name):
     image_data = hdul[0].data
     header = hdul[0].header
     
-    # Handle TPV distortion explicitly
-    wcs = WCS(header, relax=True).celestial  # Force celestial axes
+    # Handle WCS with distortion-aware parsing
+    wcs = WCS(header, relax=True).celestial
 
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection=wcs)
+
+    # Get pixel scales using Astropy's built-in method
+    try:
+        pixel_scales = wcs.proj_plane_pixel_scales() * 3600  # Convert to arcsec
+        cdelt1, cdelt2 = abs(pixel_scales[0].value), abs(pixel_scales[1].value)
+    except AttributeError:
+        # Fallback for older Astropy versions
+        cdelt1 = abs(wcs.pixel_scale_matrix[0,0] * 3600)
+        cdelt2 = abs(wcs.pixel_scale_matrix[1,1] * 3600)
+
+    # Calculate spans using header dimensions
+    ra_span = cdelt1 * header['NAXIS1'] 
+    dec_span = cdelt2 * header['NAXIS2']
+
+    # Dynamic formatting based on actual span
+    ax.coords[0].set_axislabel('Right Ascension (ICRS)')
+    ax.coords[1].set_axislabel('Declination (ICRS)')
     
-    # Universal settings for both projections
-    ax.coords[0].set_axislabel('Right Ascension (ICRS)', minpad=0.8)
-    ax.coords[1].set_axislabel('Declination (ICRS)', minpad=0.8)
-    
-    # Dynamic formatting based on actual coordinate span
-    ra_span = abs(header['CDELT1'] * header['NAXIS1'] * 3600)  # arcsec
-    dec_span = abs(header['CDELT2'] * header['NAXIS2'] * 3600)
-    
-    # Auto-adjust tick density
-    if ra_span < 60:  # Small RA span (< 1 arcmin)
-        ax.coords[0].set_major_formatter('hh:mm:ss.s')
+    # Set formatters based on angular size
+    if ra_span < 60:  # Less than 1 arcminute
+        ax.coords[0].set_major_formatter('hh:mm:ss.ss')
     else:
         ax.coords[0].set_major_formatter('hh:mm:ss')
-        
-    if dec_span < 60:  # Small Dec span
-        ax.coords[1].set_major_formatter('dd:mm:ss.s')
+
+    if dec_span < 60:
+        ax.coords[1].set_major_formatter('dd:mm:ss.ss')
     else:
         ax.coords[1].set_major_formatter('dd:mm:ss')
-    
-    # TPV-specific fixes
-    if 'TPV' in header['CTYPE1']:
+
+    # Handle TPV-specific issues
+    if 'TPV' in header.get('CTYPE1', ''):
         ax.coords[0].display_minor_ticks(False)
         ax.coords[1].display_minor_ticks(False)
-        ax.coords.grid(True, color='gray', linestyle=':', alpha=0.5)
+        grid_style = dict(color='gray', linestyle=':', alpha=0.5)
     else:
-        ax.coords.grid(True, color='gray', linestyle='--', alpha=0.7)
+        grid_style = dict(color='gray', linestyle='--', alpha=0.7)
+    
+    ax.coords.grid(True, **grid_style)
 
-    # Dynamic axis scaling
+    # Set axis limits
     ax.set_xlim(-0.5, header['NAXIS1'] - 0.5)
     ax.set_ylim(-0.5, header['NAXIS2'] - 0.5)
-    
-    # Image plotting
+
+    # Plot image
     norm = ImageNormalize(image_data, interval=ZScaleInterval())
-    im = ax.imshow(image_data, cmap='magma', norm=norm, 
+    im = ax.imshow(image_data, cmap='magma', norm=norm,
                   origin='lower', aspect='auto', interpolation='nearest')
 
-    # Colorbar with dynamic padding
+    # Add colorbar
     cbar = plt.colorbar(im, pad=0.05)
     cbar.set_label('Flux (Jy/beam)', rotation=270, labelpad=25)
 
+    # Save output
     plt.savefig(os.path.join(args.outdir, f"{args.cluster_name}_{args.band_name}_{name}.png"),
                 bbox_inches='tight', dpi=150)
     plt.close()
