@@ -19,45 +19,59 @@ def process_image(args, path, name):
     image_data = hdul[0].data
     header = hdul[0].header
     
-    wcs = WCS(header)
+    # Handle TPV distortion explicitly
+    wcs = WCS(header, relax=True).celestial  # Force celestial axes
 
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection=wcs)
     
-    ax.coords[0].set_axislabel('Right Ascension (ICRS)')
-    ax.coords[1].set_axislabel('Declination (ICRS)')
+    # Universal settings for both projections
+    ax.coords[0].set_axislabel('Right Ascension (ICRS)', minpad=0.8)
+    ax.coords[1].set_axislabel('Declination (ICRS)', minpad=0.8)
     
-    ax.coords[0].set_major_formatter('hh:mm:ss')
-    ax.coords[1].set_major_formatter('dd:mm:ss')
+    # Dynamic formatting based on actual coordinate span
+    ra_span = abs(header['CDELT1'] * header['NAXIS1'] * 3600)  # arcsec
+    dec_span = abs(header['CDELT2'] * header['NAXIS2'] * 3600)
     
-    ax.coords[0].display_minor_ticks(False)
-    ax.coords[1].display_minor_ticks(False)
+    # Auto-adjust tick density
+    if ra_span < 60:  # Small RA span (< 1 arcmin)
+        ax.coords[0].set_major_formatter('hh:mm:ss.s')
+    else:
+        ax.coords[0].set_major_formatter('hh:mm:ss')
+        
+    if dec_span < 60:  # Small Dec span
+        ax.coords[1].set_major_formatter('dd:mm:ss.s')
+    else:
+        ax.coords[1].set_major_formatter('dd:mm:ss')
     
-    ax.set_xlim(-0.5, header['NAXIS1']-0.5)
-    ax.set_ylim(-0.5, header['NAXIS2']-0.5)
+    # TPV-specific fixes
+    if 'TPV' in header['CTYPE1']:
+        ax.coords[0].display_minor_ticks(False)
+        ax.coords[1].display_minor_ticks(False)
+        ax.coords.grid(True, color='gray', linestyle=':', alpha=0.5)
+    else:
+        ax.coords.grid(True, color='gray', linestyle='--', alpha=0.7)
+
+    # Dynamic axis scaling
+    ax.set_xlim(-0.5, header['NAXIS1'] - 0.5)
+    ax.set_ylim(-0.5, header['NAXIS2'] - 0.5)
     
+    # Image plotting
     norm = ImageNormalize(image_data, interval=ZScaleInterval())
     im = ax.imshow(image_data, cmap='magma', norm=norm, 
-                  origin='lower', aspect='auto')
+                  origin='lower', aspect='auto', interpolation='nearest')
 
-    ax.coords.grid(True, color='gray', linestyle='--', alpha=0.7)
-    
+    # Colorbar with dynamic padding
     cbar = plt.colorbar(im, pad=0.05)
     cbar.set_label('Flux (Jy/beam)', rotation=270, labelpad=25)
 
-    plt.savefig(os.path.join(args.outdir, f"{args.cluster_name}_{args.band_name}_{name}.png"), 
+    plt.savefig(os.path.join(args.outdir, f"{args.cluster_name}_{args.band_name}_{name}.png"),
                 bbox_inches='tight', dpi=150)
     plt.close()
     hdul.close()
 
 if __name__ == '__main__':
     args = parse_args()
-    with fits.open(args.coaddpath) as hdul:
-        wcs1 = WCS(hdul[0].header)
-        print("File 1 WCS:\n", wcs1.to_header())
-
-    with fits.open(args.emodepath) as hdul:
-        wcs2 = WCS(hdul[0].header)
-        print("File 2 WCS:\n", wcs2.to_header())
+    os.makedirs(args.outdir, exist_ok=True)
     process_image(args, args.coaddpath, 'coadd')
     process_image(args, args.emodepath, 'emode')
