@@ -25,7 +25,7 @@ def process_image(args, path, name):
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection=wcs)
     norm = ImageNormalize(image_data, interval=ZScaleInterval())
-    im = ax.imshow(image_data, cmap='magma', norm=norm, origin='lower', aspect='auto')
+    im = ax.imshow(image_data, cmap='magma', norm=norm, origin='lower')
 
     # Coordinate formatting
     ra = ax.coords['ra']
@@ -39,7 +39,7 @@ def process_image(args, path, name):
     ax.coords.grid(True, color='white', linestyle='--', alpha=0.7)
 
     plt.colorbar(im, pad=0.15).set_label('Flux (Jy/beam)')
-    plt.savefig(os.path.join(args.outdir, f"{args.cluster_name}_{args.band_name}_{name}.png"), bbox_inches='tight')
+    plt.savefig(os.path.join(args.outdir, f"{args.cluster_name}_{args.band_name}_{name}.png"))
     plt.close()
     hdul.close()
 
