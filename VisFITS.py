@@ -4,8 +4,6 @@ from astropy.visualization import ImageNormalize, ZScaleInterval
 from astropy.wcs import WCS
 from argparse import ArgumentParser
 import os
-from astropy.coordinates import SkyCoord
-import astropy.units as u
 
 def parse_args():
     parser = ArgumentParser()
@@ -16,29 +14,18 @@ def parse_args():
     parser.add_argument('band_name', type=str, help='Band name')
     return parser.parse_args()
 
-def get_reference_coords(emode_path):
-    """Get center coordinates from emode FITS header"""
-    with fits.open(emode_path) as hdul:
-        header = hdul[0].header
-        return SkyCoord(header['CRVAL1'] * u.deg, 
-                       header['CRVAL2'] * u.deg, 
-                       frame='icrs')
-
-def process_image(args, path, name, target_coord):
+def process_image(args, path, name):
     hdul = fits.open(path)
     image_data = hdul[0].data
-    header = hdul[0].header.copy()
-    print(header)
+    header = hdul[0].header
     
-    header['CTYPE1'] = 'RA---TAN'
-    header['CTYPE2'] = 'DEC--TAN'
     wcs = WCS(header)
 
     # Create plot
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection=wcs)
     norm = ImageNormalize(image_data, interval=ZScaleInterval())
-    im = ax.imshow(image_data, cmap='magma', norm=norm, origin='lower')
+    im = ax.imshow(image_data, cmap='magma', norm=norm, origin='lower', aspect='auto')
 
     # Coordinate formatting
     ra = ax.coords['ra']
@@ -52,16 +39,11 @@ def process_image(args, path, name, target_coord):
     ax.coords.grid(True, color='white', linestyle='--', alpha=0.7)
 
     plt.colorbar(im, pad=0.15).set_label('Flux (Jy/beam)')
-    plt.savefig(os.path.join(args.outdir, f"{args.cluster_name}_{args.band_name}_{name}.png"))
+    plt.savefig(os.path.join(args.outdir, f"{args.cluster_name}_{args.band_name}_{name}.png"), bbox_inches='tight')
     plt.close()
     hdul.close()
 
 if __name__ == '__main__':
     args = parse_args()
-    
-    # Get reference coordinates from emode
-    target_coord = get_reference_coords(args.emodepath)
-    
-    # Process both images using the same reference coordinates
-    process_image(args, args.coaddpath, 'coadd', target_coord)
-    process_image(args, args.emodepath, 'emode', target_coord)
+    process_image(args, args.coaddpath, 'coadd')
+    process_image(args, args.emodepath, 'emode')
