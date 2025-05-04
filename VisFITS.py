@@ -19,24 +19,19 @@ def process_image(args, path, name):
     image_data = hdul[0].data
     header = hdul[0].header
     
-    wcs = WCS(header).celestial
-    print(wcs.to_header())
+    wcs = WCS(header)
 
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection=wcs)
     
-    lon = ax.coords[0]
-    lat = ax.coords[1]
+    ax.coords[0].set_axislabel('Right Ascension (ICRS)')
+    ax.coords[1].set_axislabel('Declination (ICRS)')
     
-    lon.set_axislabel('Right Ascension (ICRS)', minpad=0.8)
-    lon.set_major_formatter('hh:mm:ss')
-    lon.set_ticks(color='black', size=10, width=1.5)
-    lon.display_minor_ticks(True)
+    ax.coords[0].set_major_formatter('hh:mm:ss')
+    ax.coords[1].set_major_formatter('dd:mm:ss')
     
-    lat.set_axislabel('Declination (ICRS)', minpad=0.9)
-    lat.set_major_formatter('dd:mm:ss')
-    lat.set_ticks(color='black', size=10, width=1.5)
-    lat.display_minor_ticks(True)
+    ax.coords[0].display_minor_ticks(False)
+    ax.coords[1].display_minor_ticks(False)
     
     ax.set_xlim(-0.5, header['NAXIS1']-0.5)
     ax.set_ylim(-0.5, header['NAXIS2']-0.5)
@@ -50,7 +45,6 @@ def process_image(args, path, name):
     cbar = plt.colorbar(im, pad=0.05)
     cbar.set_label('Flux (Jy/beam)', rotation=270, labelpad=25)
 
-    plt.subplots_adjust(left=0.15, right=0.9, bottom=0.15, top=0.9)
     plt.savefig(os.path.join(args.outdir, f"{args.cluster_name}_{args.band_name}_{name}.png"), 
                 bbox_inches='tight', dpi=150)
     plt.close()
