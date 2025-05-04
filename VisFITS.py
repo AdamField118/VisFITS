@@ -52,5 +52,12 @@ def process_image(args, path, name):
 
 if __name__ == '__main__':
     args = parse_args()
+    with fits.open(args.coaddpath) as hdul:
+        wcs1 = WCS(hdul[0].header)
+        print("File 1 WCS:\n", wcs1.to_header())
+
+    with fits.open(args.emodepath) as hdul:
+        wcs2 = WCS(hdul[0].header)
+        print("File 2 WCS:\n", wcs2.to_header())
     process_image(args, args.coaddpath, 'coadd')
     process_image(args, args.emodepath, 'emode')
