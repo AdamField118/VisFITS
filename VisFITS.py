@@ -19,25 +19,32 @@ def process_image(args, path, name):
     image_data = hdul[0].data
     header = hdul[0].header
     
-    wcs = WCS(header)
+    # Add this line to ensure proper WCS handling
+    wcs = WCS(header).celestial  # Focus on celestial coordinates only
 
     # Create plot
     fig = plt.figure(figsize=(10, 8))
     ax = fig.add_subplot(111, projection=wcs)
+    
+    # Add these lines to explicitly set coordinate display
+    ax.coords[0].set_axislabel('Right Ascension (ICRS)')
+    ax.coords[1].set_axislabel('Declination (ICRS)')
+    
     norm = ImageNormalize(image_data, interval=ZScaleInterval())
     im = ax.imshow(image_data, cmap='magma', norm=norm, origin='lower', aspect='auto')
 
-    # Coordinate formatting
-    ra = ax.coords['ra']
-    dec = ax.coords['dec']
-    ra.set_axislabel('Right Ascension (ICRS)')
-    dec.set_axislabel('Declination (ICRS)')
-    ra.set_ticks(size=10, color='white', width=1.5)
-    dec.set_ticks(size=10, color='white', width=1.5)
+    # Coordinate formatting - modified grid parameters
+    ra = ax.coords[0]
+    dec = ax.coords[1]
     ra.set_major_formatter('hh:mm:ss')
     dec.set_major_formatter('dd:mm:ss')
-    ax.coords.grid(True, color='white', linestyle='--', alpha=0.7)
-
+    
+    # Modified grid settings for better visibility
+    ax.coords.grid(True, color='gray', linestyle='--', alpha=0.7)
+    
+    # Add this to ensure proper layout
+    plt.tight_layout()
+    
     plt.colorbar(im, pad=0.15).set_label('Flux (Jy/beam)')
     plt.savefig(os.path.join(args.outdir, f"{args.cluster_name}_{args.band_name}_{name}.png"), bbox_inches='tight')
     plt.close()
