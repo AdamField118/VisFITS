@@ -9,11 +9,8 @@ import astropy.units as u
 
 def parse_args():
     parser = ArgumentParser()
-    parser.add_argument('outdir', type=str, help='Output directory for images')
     parser.add_argument('coaddpath', type=str, help='Path to COADD File')
     parser.add_argument('emodepath', type=str, help='Path to EMODE File')
-    parser.add_argument('cluster_name', type=str, help='Cluster name')
-    parser.add_argument('band_name', type=str, help='Band name')
     return parser.parse_args()
 
 def get_reference_coords(emode_path):
@@ -53,7 +50,7 @@ def process_image(args, path, name, target_coord):
     ax.invert_xaxis()
 
     plt.colorbar(im, pad=0.15).set_label('Flux (Jy/beam)')
-    plt.savefig(os.path.join(args.outdir, f"{args.cluster_name}_{args.band_name}_{name}.png"))
+    plt.savefig(os.path.join('./outputs', f"{name}.png"))
     plt.close()
     hdul.close()
 
