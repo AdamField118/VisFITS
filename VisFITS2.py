@@ -55,7 +55,7 @@ def process_coadd(title, filename, cmap='magma'):
     plt.close()
 
 def process_emode(title, filename, cmap='magma'):
-    with fits.open(args.emode) as hdul:
+    with fits.open(args.emodepath) as hdul:
         emode_data = hdul[0].data
         wcs = WCS(hdul[0].header, relax=True)
         # coadd_data, wcs_coadd, 'COADD Image', 'coadd_vis.png'
