@@ -1,0 +1,12 @@
+==========================================
+VisFITS: FITS Overlay Visualization
+==========================================
+Configuration:
+  Coadd file: /home/adfield/weak_lensing/superbit-lensing/data/PLCKG287d0p32d9/b/coadd/PLCKG287d0p32d9_coadd_b.fits
+  E-mode file: /home/adfield/weak_lensing/SMPy/outputs/kaiser_squires/simulation_testing_kaiser_squires_e_mode.fits
+  Output name: galaxy_cluster_analysis
+  Coadd alpha: 0.7
+  E-mode alpha: 0.9
+
+Input files verified ✓
+Starting VisFITS processing...

@@ -6,6 +6,8 @@ dependencies:
   - python=3.12.7=hc5c86c4_0_cpython
   - pip=24.3.1=pyh8b19718_0
   - pip:
+    - numpy==1.26.4
+    - scipy==1.14.1
     - argparse==1.4.0
     - astropy==6.1.6
     - matplotlib==3.9.2

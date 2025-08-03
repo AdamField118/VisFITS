@@ -1,0 +1,23 @@
+Loading miniconda3/25.1.1/24g7bpu
+  Loading requirement: gcc-runtime/13.2.0/s3f7i6x
+Traceback (most recent call last):
+  File "/home/adfield/weak_lensing/VisFITS/visfits.py", line 311, in <module>
+    exit(main())
+         ^^^^^^
+  File "/home/adfield/weak_lensing/VisFITS/visfits.py", line 295, in main
+    process_filename = create_process_visualization(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/adfield/weak_lensing/VisFITS/visfits.py", line 77, in create_process_visualization
+    ax3 = fig.add_subplot(0.2, gs[2], projection=reference_wcs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/adfield/.conda/envs/visfits/lib/python3.12/site-packages/matplotlib/figure.py", line 710, in add_subplot
+    ax = projection_class(self, *args, **pkw)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/adfield/.conda/envs/visfits/lib/python3.12/site-packages/astropy/visualization/wcsaxes/core.py", line 124, in __init__
+    super().__init__(fig, *args, **kwargs)
+  File "/home/adfield/.conda/envs/visfits/lib/python3.12/site-packages/matplotlib/axes/_base.py", line 641, in __init__
+    subplotspec = SubplotSpec._from_subplot_args(fig, args)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/adfield/.conda/envs/visfits/lib/python3.12/site-packages/matplotlib/gridspec.py", line 576, in _from_subplot_args
+    raise _api.nargs_error("subplot", takes="1 or 3", given=len(args))
+TypeError: subplot() takes 1 or 3 positional arguments but 2 were given

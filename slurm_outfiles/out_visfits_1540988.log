@@ -1,0 +1,60 @@
+==========================================
+VisFITS: FITS Overlay Visualization
+==========================================
+Configuration:
+  Coadd file: /home/adfield/weak_lensing/superbit-lensing/data/PLCKG287d0p32d9/b/coadd/PLCKG287d0p32d9_coadd_b.fits
+  E-mode file: /home/adfield/weak_lensing/SMPy/outputs/kaiser_squires/simulation_testing_kaiser_squires_e_mode.fits
+  Output name: galaxy_cluster_analysis
+  Coadd alpha: 0.2
+  E-mode alpha: 0.9
+
+Input files verified ✓
+Starting VisFITS processing...
+Loading FITS files...
+Coadd: /home/adfield/weak_lensing/superbit-lensing/data/PLCKG287d0p32d9/b/coadd/PLCKG287d0p32d9_coadd_b.fits
+E-mode: /home/adfield/weak_lensing/SMPy/outputs/kaiser_squires/simulation_testing_kaiser_squires_e_mode.fits
+Coadd shape: (10973, 11366)
+E-mode shape: (37, 39)
+Hemisphere detection:
+  Coadd declination: -28.0860°
+  E-mode declination: -28.0823°
+  Southern hemisphere: True
+  CD1_1 (X pixel scale): -3.916280911653e-05
+  Coordinate system inverted: True
+Applying X-axis flip to coadd for southern hemisphere observation...
+Aligned to shape: (10973, 11366)
+
+Coordinate system information:
+  Reference RA: 177.7032°
+  Reference Dec: -28.0860°
+  Pixel scale X: -0.14 arcsec/pixel
+  Pixel scale Y: 0.14 arcsec/pixel
+
+Success! Overlay saved as: ./outputs/galaxy_cluster_analysis_overlay.png
+Creating process visualization...
+Process visualization saved as: ./outputs/galaxy_cluster_analysis_process.png
+
+Generated files:
+  📊 galaxy_cluster_analysis_overlay.png - Main overlay for your poster
+  📈 galaxy_cluster_analysis_process.png - Process explanation figure
+
+The overlay shows dark matter distribution (purple/plasma) overlaid on baryonic matter (gray)
+Perfect for demonstrating mass concentration around the galaxy cluster!
+
+==========================================
+SUCCESS!
+==========================================
+
+Generated files:
+  📊 ./outputs/galaxy_cluster_analysis_overlay.png   (Main overlay for poster)
+  📈 ./outputs/galaxy_cluster_analysis_process.png   (Process explanation)
+
+Main overlay shows:
+  🔘 Gray regions = Baryonic matter (visible galaxies)
+  🟣 Purple regions = Dark matter (from weak lensing)
+
+Process figure shows:
+  [Coadd] + [Mass Map] → [Overlay] visualization
+
+Perfect for your poster! The overlay reveals where
+dark matter is concentrated relative to visible matter.
