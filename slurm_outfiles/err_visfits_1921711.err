@@ -1,0 +1,28 @@
+Traceback (most recent call last):
+  File "/home/adfield/weak_lensing/VisFITS/visfits.py", line 5, in <module>
+    from astropy.wcs import WCS
+  File "/home/adfield/.conda/envs/visfits/lib/python3.12/site-packages/astropy/wcs/__init__.py", line 27, in <module>
+    from . import utils
+  File "/home/adfield/.conda/envs/visfits/lib/python3.12/site-packages/astropy/wcs/utils.py", line 9, in <module>
+    from astropy.coordinates import (
+  File "/home/adfield/.conda/envs/visfits/lib/python3.12/site-packages/astropy/coordinates/__init__.py", line 12, in <module>
+    from .builtin_frames import *
+  File "/home/adfield/.conda/envs/visfits/lib/python3.12/site-packages/astropy/coordinates/builtin_frames/__init__.py", line 30, in <module>
+    from .cirs import CIRS
+  File "/home/adfield/.conda/envs/visfits/lib/python3.12/site-packages/astropy/coordinates/builtin_frames/cirs.py", line 8, in <module>
+    from .utils import DEFAULT_OBSTIME, EARTH_CENTER
+  File "/home/adfield/.conda/envs/visfits/lib/python3.12/site-packages/astropy/coordinates/builtin_frames/utils.py", line 16, in <module>
+    from astropy.utils import iers
+  File "/home/adfield/.conda/envs/visfits/lib/python3.12/site-packages/astropy/utils/iers/__init__.py", line 1, in <module>
+    from .iers import *
+  File "/home/adfield/.conda/envs/visfits/lib/python3.12/site-packages/astropy/utils/iers/iers.py", line 36, in <module>
+    from astropy.table import MaskedColumn, QTable
+  File "/home/adfield/.conda/envs/visfits/lib/python3.12/site-packages/astropy/table/__init__.py", line 118, in <module>
+    import astropy.io.ascii.connect
+  File "/home/adfield/.conda/envs/visfits/lib/python3.12/site-packages/astropy/io/ascii/__init__.py", line 41, in <module>
+    from .ecsv import Ecsv
+  File "/home/adfield/.conda/envs/visfits/lib/python3.12/site-packages/astropy/io/ascii/ecsv.py", line 15, in <module>
+    from astropy.table import meta, serialize
+  File "/home/adfield/.conda/envs/visfits/lib/python3.12/site-packages/astropy/table/meta.py", line 7, in <module>
+    import yaml
+ModuleNotFoundError: No module named 'yaml'

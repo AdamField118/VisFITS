@@ -14,7 +14,7 @@
 # ============================================================================
 
 # REQUIRED: Full paths to your FITS files
-COADDPATH="/home/adfield/weak_lensing/superbit-lensing/data/PLCKG287d0p32d9/b/coadd/PLCKG287d0p32d9_coadd_b.fits"
+COADDPATH="/home/adfield/weak_lensing/superbit-lensing-ISP/data/PLCKG287d0p32d9/b/coadd/PLCKG287d0p32d9_coadd_b.fits"
 EMODEPATH="/home/adfield/weak_lensing/SMPy/outputs/kaiser_squires/simulation_testing_kaiser_squires_e_mode.fits"
 
 # EXAMPLE paths (uncomment and modify for your setup):
