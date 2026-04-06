@@ -17,6 +17,10 @@ def parse_args():
                        help='Transparency for coadd layer (default: 0.7)')
     parser.add_argument('--emode-alpha', type=float, default=0.8,
                        help='Transparency for E-mode layer (default: 0.8)')
+    parser.add_argument('--exposure-path', type=str, default=None,
+                       help='Path to a single exposure FITS file (optional, for output)')
+    parser.add_argument('--bmode-path', type=str, default=None,
+                       help='Path to a b mode FITS file (optional, for output)')
     return parser.parse_args()
 
 def detect_hemisphere_and_orientation(coadd_header, emode_header):
@@ -48,6 +52,25 @@ def detect_hemisphere_and_orientation(coadd_header, emode_header):
     needs_coadd_flip = is_southern
     
     return is_southern, needs_coadd_flip, coord_inverted
+
+def save_single(data, wcs, output_path, title, label):
+    """Save a single image with colormap."""
+    fig = plt.figure(figsize=(14, 12))
+    ax = fig.add_subplot(111, projection=wcs)
+    norm = ImageNormalize(data, interval=ZScaleInterval())
+    im = ax.imshow(data, cmap='plasma', norm=norm, origin='lower')
+    cbar = plt.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+    cbar.set_label(label, fontsize=12)
+    ra = ax.coords['ra']
+    dec = ax.coords['dec']
+    ra.set_axislabel('Right Ascension (ICRS)', fontsize=14)
+    dec.set_axislabel('Declination (ICRS)', fontsize=14)
+    ra.set_major_formatter('hh:mm:ss.s')
+    dec.set_major_formatter('dd:mm:ss')
+    ax.coords.grid(True, color='white', linestyle='--', alpha=0.6)
+    ax.set_title(title, fontsize=16, pad=30)
+    plt.savefig(output_path, bbox_inches='tight', dpi=300)
+    plt.close()
 
 def create_process_visualization(coadd_aligned, emode_aligned, reference_wcs, 
                                output_name, coadd_alpha, emode_alpha, is_southern, coord_inverted):
@@ -305,6 +328,43 @@ def main():
     print(f"\nThe overlay shows dark matter distribution (purple/plasma) overlaid on baryonic matter (gray)")
     print(f"Perfect for demonstrating mass concentration around the galaxy cluster!")
     
+    # single outputs
+    save_single(coadd_aligned, reference_wcs,
+                 os.path.join('./outputs', f'{args.output_name}_coadd_single.png'),
+                 'Coadd (Baryonic Matter)', 'Flux (Jy/beam)')
+    print(f"  📊 {args.output_name}_coadd_single.png")
+
+    save_single(emode_aligned, reference_wcs,
+                 os.path.join('./outputs', f'{args.output_name}_emode_single.png'),
+                 'E-mode Mass Map (Dark Matter)', 'E-mode Amplitude')
+    print(f"  📊 {args.output_name}_emode_single.png")
+
+    if args.exposure_path:
+        if not os.path.exists(args.exposure_path):
+            print(f"WARNING: Exposure file not found: {args.exposure_path}, skipping.")
+        else:
+            with fits.open(args.exposure_path) as hdul:
+                exp_data = hdul[0].data
+                exp_header = hdul[0].header
+                exp_wcs = WCS(exp_header, relax=True).celestial
+            save_single(exp_data, exp_wcs,
+                         os.path.join('./outputs', f'{args.output_name}_exposure_single.png'),
+                         'Single Exposure', 'Counts (ADU)')
+            print(f"  📊 {args.output_name}_exposure_single.png")
+
+    if args.exposure_path:
+        if not os.path.exists(args.bmode_path):
+            print(f"WARNING: B mode file not found: {args.bmode_path}, skipping.")
+        else:
+            with fits.open(args.bmode_path) as hdul:
+                bmode_data = hdul[0].data
+                bmode_header = hdul[0].header
+                bmode_wcs = WCS(bmode_header, relax=True).celestial
+            save_single(bmode_data,bmode_wcs,
+                         os.path.join('./outputs', f'{args.output_name}_bmode_single.png'),
+                         'B-mode Mass Map', 'B-mode Amplitude')
+            print(f"  📊 {args.output_name}_bmode_single.png")
+
     return 0
 
 if __name__ == '__main__':

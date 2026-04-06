@@ -1,39 +1,94 @@
 name: visfits
 channels:
+  - defaults
   - conda-forge
   - https://repo.anaconda.com/pkgs/main
   - https://repo.anaconda.com/pkgs/r
 dependencies:
   - _libgcc_mutex=0.1=conda_forge
   - _openmp_mutex=4.5=2_gnu
+  - aom=3.9.1=hac33072_0
   - bzip2=1.0.8=h4bc722e_7
   - ca-certificates=2026.2.25=hbd8a1cb_0
+  - cairo=1.18.4=h3394656_0
+  - chafa=1.18.0=hdcaf24f_0
+  - dav1d=1.2.1=hd590300_0
+  - font-ttf-dejavu-sans-mono=2.37=hab24e00_0
+  - font-ttf-inconsolata=3.000=h77eed37_0
+  - font-ttf-source-code-pro=2.038=h77eed37_0
+  - font-ttf-ubuntu=0.83=h77eed37_3
+  - fontconfig=2.15.0=h7e30c49_1
+  - fonts-conda-ecosystem=1=0
+  - fonts-conda-forge=1=hc364b38_1
+  - freetype=2.14.2=ha770c72_0
+  - fribidi=1.0.16=hb03c661_0
+  - gdk-pixbuf=2.44.4=h2b0a6b4_0
+  - graphite2=1.3.14=hecca717_2
+  - harfbuzz=12.2.0=h15599e2_0
+  - icu=75.1=he02047a_0
   - ld_impl_linux-64=2.44=h1423503_1
+  - lerc=4.1.0=hdb68285_0
+  - libavif16=1.4.1=hcfa2d63_0
+  - libbrotlicommon=1.2.0=hb03c661_1
+  - libbrotlidec=1.2.0=hb03c661_1
+  - libbrotlienc=1.2.0=hb03c661_1
+  - libdeflate=1.25=h17f619e_0
   - libexpat=2.7.1=hecca717_0
   - libffi=3.4.6=h2dba641_1
+  - libfreetype=2.14.2=ha770c72_0
+  - libfreetype6=2.14.2=h73754d4_0
   - libgcc=15.1.0=h767d61c_4
   - libgcc-ng=15.1.0=h69a702a_4
+  - libglib=2.86.3=h8b17d9a_0
   - libgomp=15.1.0=h767d61c_4
+  - libhwy=1.3.0=h4c17acf_1
+  - libiconv=1.18=h3b78370_2
+  - libjpeg-turbo=3.1.2=hb03c661_0
+  - libjxl=0.11.2=ha09017c_0
   - liblzma=5.8.1=hb9d3cd8_2
   - liblzma-devel=5.8.1=hb9d3cd8_2
   - libnsl=2.0.1=hb9d3cd8_1
+  - libpng=1.6.55=h421ea60_0
+  - librsvg=2.60.0=h61e6d4b_0
   - libsqlite=3.50.4=h0c1763c_0
+  - libstdcxx=15.1.0=h8f9b012_4
+  - libstdcxx-ng=15.1.0=h4852527_4
+  - libtiff=4.7.1=h9d88235_1
   - libuuid=2.38.1=h0b41bf4_0
+  - libwebp-base=1.6.0=hd42ef1d_0
+  - libxcb=1.17.0=h8a09558_0
   - libxcrypt=4.4.36=hd590300_1
+  - libxml2-16=2.15.1=ha9997c6_0
   - libzlib=1.3.1=hb9d3cd8_2
   - ncurses=6.5=h2d0b736_3
   - openssl=3.6.1=h35e630c_1
+  - pango=1.56.4=hadf4263_0
+  - pcre2=10.46=h1321c63_0
   - pip=24.3.1=pyh8b19718_0
+  - pixman=0.46.4=h54a6638_1
+  - pthread-stubs=0.4=hb9d3cd8_1002
   - python=3.12.7=hc5c86c4_0_cpython
+  - rav1e=0.8.1=h1fbca29_0
   - readline=8.2=h8c095d6_2
   - setuptools=80.9.0=pyhff2d567_0
+  - svt-av1=4.0.1=hecca717_0
   - tk=8.6.13=noxft_hd72426e_102
   - tzdata=2025b=h78e105d_0
   - wheel=0.45.1=pyhd8ed1ab_1
+  - xorg-libice=1.1.2=hb9d3cd8_0
+  - xorg-libsm=1.2.6=he73a12e_0
+  - xorg-libx11=1.8.13=he1eb515_0
+  - xorg-libxau=1.0.12=hb03c661_1
+  - xorg-libxdmcp=1.1.5=hb03c661_1
+  - xorg-libxext=1.3.7=hb03c661_0
+  - xorg-libxrender=0.9.12=hb9d3cd8_0
   - xz=5.8.1=hbcc6ac9_2
   - xz-gpl-tools=5.8.1=hbcc6ac9_2
   - xz-tools=5.8.1=hb9d3cd8_2
   - yaml=0.2.5=h280c20c_3
+  - yazi=26.1.22=hdab8a38_0
+  - zlib=1.3.1=hb9d3cd8_2
+  - zstd=1.5.7=hb78ec9c_6
   - pip:
       - argparse==1.4.0
       - astropy==6.1.6
@@ -44,4 +99,5 @@ dependencies:
       - numpy==1.26.4
       - packaging==25.0
       - pillow==11.3.0
+      - pyyaml==6.0.3
       - scipy==1.14.1

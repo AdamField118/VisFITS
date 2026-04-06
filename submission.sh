@@ -16,10 +16,8 @@
 # REQUIRED: Full paths to your FITS files
 COADDPATH="/home/adfield/weak_lensing/superbit-lensing-ISP/data/PLCKG287d0p32d9/b/coadd/PLCKG287d0p32d9_coadd_b.fits"
 EMODEPATH="/home/adfield/weak_lensing/SMPy/outputs/kaiser_squires/simulation_testing_kaiser_squires_e_mode.fits"
-
-# EXAMPLE paths (uncomment and modify for your setup):
-# COADDPATH="../superbit-lensing/data/PLCKG287d0p32d9/b/coadd/PLCKG287d0p32d9_coadd_b.fits"
-# EMODEPATH="../SMPy/outputs/kaiser_squires/simulation_testing_kaiser_squires_e_mode.fits"
+EXPOSUREPATH="/home/adfield/weak_lensing/superbit-lensing-ISP/data/PLCKG287d0p32d9/b/cal/PLCKG287d0p32d9_1_300_1681980418_clean.fits"
+BMODEPATH="/home/adfield/weak_lensing/SMPy/outputs/kaiser_squires/simulation_testing_kaiser_squires_b_mode.fits"
 
 # Optional: Customize output and display settings
 OUTPUT_NAME="galaxy_cluster_analysis"  # Base name for output files
@@ -73,8 +71,9 @@ echo "Starting VisFITS processing..."
 python visfits.py "$COADDPATH" "$EMODEPATH" \
     --output-name "$OUTPUT_NAME" \
     --coadd-alpha "$COADD_ALPHA" \
-    --emode-alpha "$EMODE_ALPHA"
-
+    --emode-alpha "$EMODE_ALPHA" \
+    --exposure-path "$EXPOSUREPATH" \
+    --bmode-path "$BMODEPATH"
 # Check result
 if [ $? -eq 0 ]; then
     echo ""
